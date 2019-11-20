@@ -164,10 +164,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			new ConcurrentHashMap<String, RootBeanDefinition>(256);
 
 	/** Names of beans that have already been created at least once */
+	/** 存放所有至少创建过一次 的所有beanName */
 	private final Set<String> alreadyCreated =
 			Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>(256));
 
 	/** Names of beans that are currently in creation */
+	/** 当前正在创建的Bean名称 */
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<Object>("Prototype beans currently in creation");
 
@@ -356,7 +358,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							}
 						}
 					});
-					//获取给定Bean的实例对象
+					//获取给定Bean的实例对象，( FactoryBean)
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
 
