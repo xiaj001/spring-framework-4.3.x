@@ -319,10 +319,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		super.copyConfigurationFrom(otherFactory);
 		if (otherFactory instanceof DefaultListableBeanFactory) {
 			DefaultListableBeanFactory otherListableFactory = (DefaultListableBeanFactory) otherFactory;
+
+			//定义了是否允许同名的不同bean definition再次进行注册
 			this.allowBeanDefinitionOverriding = otherListableFactory.allowBeanDefinitionOverriding;
+
+			//定义了是否允许eager类（相对于lazy）的加载，甚至延迟初始化的bean的加载
 			this.allowEagerClassLoading = otherListableFactory.allowEagerClassLoading;
+
 			this.dependencyComparator = otherListableFactory.dependencyComparator;
 			// A clone of the AutowireCandidateResolver since it is potentially BeanFactoryAware...
+			//是一个策略接口，用来决定一个特定的bean definition 是否满足做一个特定依赖的自动绑定的候选项
 			setAutowireCandidateResolver(BeanUtils.instantiateClass(getAutowireCandidateResolver().getClass()));
 			// Make resolvable dependencies (e.g. ResourceLoader) available here as well...
 			this.resolvableDependencies.putAll(otherListableFactory.resolvableDependencies);
@@ -740,7 +746,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			// 如果不是抽象的不是懒加载的且是单例的
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				// 判断是否是工厂bean
 				if (isFactoryBean(beanName)) {
 					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 					boolean isEagerInit;
@@ -761,6 +769,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
+					//不是工厂bean
 					getBean(beanName);
 				}
 			}

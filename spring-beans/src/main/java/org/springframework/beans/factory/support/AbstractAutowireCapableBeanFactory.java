@@ -268,9 +268,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (otherFactory instanceof AbstractAutowireCapableBeanFactory) {
 			AbstractAutowireCapableBeanFactory otherAutowireFactory =
 					(AbstractAutowireCapableBeanFactory) otherFactory;
+
+			//创建bean 实例的策略,默认值： CglibSubclassingInstantiationStrategy();
 			this.instantiationStrategy = otherAutowireFactory.instantiationStrategy;
+
+			// 确定是否自动尝试去解析循环引用的bean
 			this.allowCircularReferences = otherAutowireFactory.allowCircularReferences;
+
+			//定义了在依赖检查和自动绑定时要忽略的依赖类型，是一组类对象，例如string，默认为没有。
 			this.ignoredDependencyTypes.addAll(otherAutowireFactory.ignoredDependencyTypes);
+
+			//定义了在依赖检查和自动绑定时要忽略的依赖接口，是一组类对象，默认情况下，只有beanFactory接口被忽略
 			this.ignoredDependencyInterfaces.addAll(otherAutowireFactory.ignoredDependencyInterfaces);
 		}
 	}
@@ -468,6 +476,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 执行 InstantiationAwareBeanPostProcessor
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -518,6 +527,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
+					// 执行MergedBeanDefinitionPostProcessor方法
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
@@ -548,8 +558,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
+			// 【Bean属性赋值】
 			populateBean(beanName, mbd, instanceWrapper);
 			if (exposedObject != null) {
+				// 【Bean初始化】
 				exposedObject = initializeBean(beanName, exposedObject, mbd);
 			}
 		}
@@ -1614,6 +1626,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			// 执行Aware类的方法
 			invokeAwareMethods(beanName, bean);
 		}
 
@@ -1623,6 +1636,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
+			// 执行 init 方法
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {
