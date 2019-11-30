@@ -45,7 +45,8 @@ public abstract aspect GenericInterfaceDrivenDependencyInjectionAspect<I> extend
 
 	public pointcut inConfigurableBean() : within(I+);
 
-	public final void configureBean(Object bean) {
+	@Override
+    public final void configureBean(Object bean) {
 		configure((I)bean);
 	}
 

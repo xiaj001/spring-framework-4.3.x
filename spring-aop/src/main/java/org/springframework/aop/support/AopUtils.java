@@ -271,11 +271,16 @@ public abstract class AopUtils {
 	 * @return whether the pointcut can apply on any method
 	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
+		//类级别代理
 		if (advisor instanceof IntroductionAdvisor) {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
+		//方法级别代理。
 		else if (advisor instanceof PointcutAdvisor) {
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
+			//  1. 看被代理类是否满足匹配。
+			//  2. 看被代理类中的方法是否能够被aop:pointcut中的expression匹配，有一个方法满足即可，就做这一个方法的代理。
+			// 如：<aop:pointcut expression="execution(* com.wp.aop.InvokableMethod.*(..))"/>  表示拦截这个com.wp.aop.InvokableMethod接口的所有方法。
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
 		else {
@@ -296,6 +301,7 @@ public abstract class AopUtils {
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
 		}
+		//用了链表
 		List<Advisor> eligibleAdvisors = new LinkedList<Advisor>();
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
@@ -308,6 +314,7 @@ public abstract class AopUtils {
 				// already processed
 				continue;
 			}
+			//重点方法，这里的canApply方法
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

@@ -22,9 +22,13 @@
 	
 	<!-- <tx:annotation-driven/> -->
 
-	<context:component-scan base-package="com.aisino.test.aop"/>
+	<aop:aspectj-autoproxy/>
+	<bean class="com.aisino.test.aop.LogAspects"></bean>
+	<bean class="com.aisino.test.aop.CacheAspects"></bean>
+	<bean class="com.aisino.test.aop.MathCalculator"></bean>
+	<!--<context:component-scan base-package="com.aisino.test.aop"/>-->
 
-	<bean id = "testAdvisor" class = "com.aisino.test.aop.Advisior"></bean>
+<!--	<bean id = "testAdvisor" class = "com.aisino.test.aop.Advisior"></bean>
 	<bean id = "testAop" class = "org.springframework.aop.framework.ProxyFactoryBean">
 		<property name = "ProxyInterfaces" value = "com.aisino.test.aop.IMathCalculator"/>
 		<property name="target">
@@ -36,6 +40,6 @@
 				<value>testAdvisor</value>
 			</list>
 		</property>
-	</bean>
+	</bean>-->
 
 </beans>
